@@ -1,16 +1,16 @@
 'use client';
 
 import { useState } from "react";
-import { useLogin } from "../hooks/useAuth";
+import { useRegister } from "../hooks/useAuth";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 
-const LoginForm = () => {
+const RegisterForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const { mutate, isPending, isError, error } = useLogin();
+  const { mutate, isPending, isError, error } = useRegister();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,16 +42,16 @@ const LoginForm = () => {
       </div>
 
       <Button type="submit" disabled={isPending} className="w-full">
-        {isPending ? "Logging in..." : "Login"}
+        {isPending ? "Registering in..." : "Register"}
       </Button>
 
       {isError && (
         <p className="text-sm text-destructive">
-          {error?.response?.data?.errors?.message || "Login failed. Please try again."}
+          {error?.response?.data?.errors?.message || "Register failed. Please try again."}
         </p>
       )}
     </form>
   );
 };
 
-export default LoginForm;
+export default RegisterForm;

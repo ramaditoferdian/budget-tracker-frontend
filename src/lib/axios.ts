@@ -18,7 +18,7 @@ api.interceptors.request.use(
   (error) => {
     const message =
       error.response?.data?.message ||
-      error.response?.data?.error ||
+      error.response?.data?.errors?.message ||
       error.message ||
       "Terjadi kesalahan.";
 
@@ -37,7 +37,7 @@ api.interceptors.response.use(
   (error) => {
     const message =
       error.response?.data?.message ||
-      error.response?.data?.error ||
+      error.response?.data?.errors?.message ||
       error.message ||
       "Terjadi kesalahan.";
 

@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "@/styles/globals.css";
 import AuthGuard from "@/components/guards/AuthGuard";
+import Navbar from "@/components/layout/Navbar";
+import Sidebar from "@/components/layout/Sidebar";
 
-const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -17,7 +17,13 @@ export default function MainLayout({
 }>) {
   return (
     <AuthGuard>
-      {children}
+      <div className="flex">
+        <Sidebar />
+        <div className="flex-1">
+          <Navbar />
+          <main className="p-4">{children}</main>
+        </div>
+      </div>
     </AuthGuard>
   );
 }

@@ -9,17 +9,25 @@ export interface AuthPayload {
 }
 
 // Struktur response dari API
-export interface AuthResponse {
+export interface LoginResponse {
   data: {
     token: string;
   };
   errors: boolean;
 }
 
+export interface RegisterResponse {
+  data: {
+    id: string;
+    email: string;
+  };
+  errors: boolean;
+}
+
 // Fungsi login
 export const login = (payload: AuthPayload) =>
-  post<AuthResponse>("/auth/login", payload);
+  post<LoginResponse>("/auth/login", payload);
 
 // Fungsi register
 export const register = (payload: AuthPayload) =>
-  post<AuthResponse>("/auth/register", payload);
+  post<RegisterResponse>("/auth/register", payload);
