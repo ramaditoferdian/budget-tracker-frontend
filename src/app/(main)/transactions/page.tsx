@@ -1,6 +1,8 @@
+import TransactionsPage from "@/modules/transactions/components/TransactionPage";
+
 const Transactions = () => {
   return (
-    <h1>Transactions Page</h1>
+    <TransactionsPage />
   );
 }
 
