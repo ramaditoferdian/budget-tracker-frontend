@@ -1,4 +1,5 @@
 import LoginForm from "@/modules/auth/components/LoginForm";
+import Link from "next/link";
 
 export default function LoginPage() {
   return (
@@ -14,7 +15,7 @@ export default function LoginPage() {
         <LoginForm />
 
         <p className="text-center text-xs text-muted-foreground">
-          Don’t have an account? <a href="/register" className="underline hover:text-foreground">Register</a>
+          Don’t have an account? <Link href="/register" className="underline hover:text-foreground">Register</Link>
         </p>
       </div>
     </main>

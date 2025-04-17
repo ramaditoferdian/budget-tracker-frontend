@@ -1,4 +1,5 @@
 import RegisterForm from "@/modules/auth/components/RegisterForm";
+import Link from "next/link";
 
 export default function RegisterPage() {
   return (
@@ -14,7 +15,7 @@ export default function RegisterPage() {
         <RegisterForm />
 
         <p className="text-center text-xs text-muted-foreground">
-          Already have an account? <a href="/register" className="underline hover:text-foreground">Login</a>
+          Already have an account? <Link href="/login" className="underline hover:text-foreground">Login</Link>
         </p>
       </div>
     </main>

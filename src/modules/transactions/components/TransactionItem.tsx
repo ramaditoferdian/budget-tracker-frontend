@@ -13,41 +13,59 @@ const TransactionItem: React.FC<Props> = ({ transaction }) => {
   const isExpense = typeName === 'expense-type';
   const isTransfer = typeName === 'transfer-type';
 
-  // const isMutasiMasuk = isTransfer && transaction.category.id.includes('in-trans-cat');
-  // const isMutasiKeluar = isTransfer && transaction.category.id.includes('out-trans-cat');
-
   const isPositive = isIncome;
   const isNegative = isExpense;
-  const isNetral = isTransfer
+  const isNetral = isTransfer;
 
   const amountColor = isPositive
     ? 'text-green-600'
     : isNegative
     ? 'text-red-600'
-    : isNetral ? 'text-blue-500' : 'text-neutral-800';
+    : isNetral
+    ? transaction.category.id.includes('in-trans') 
+      ? 'text-blue-600'  // Transfer Masuk (Biru)
+      : transaction.category.id.includes('out-trans')
+      ? 'text-yellow-500' // Transfer Keluar (Kuning)
+      : 'text-neutral-800' // Default
+    : 'text-neutral-800';
 
   const amountSign = isPositive ? '+' : isNegative ? '-' : '';
 
+  const secondaryText = isTransfer
+    ? `Transfer • ${transaction.source.name}${transaction.targetSource ? ` → ${transaction.targetSource.name}` : ''}`
+    : `${transaction.type.name}`;
+
+  // Ikon transfer masuk dan keluar
+  const transferIcon = transaction.category.id.includes('in-trans') ? (
+    <span className="text-blue-600">⬆️</span> // Transfer Masuk
+  ) : transaction.category.id.includes('out-trans') ? (
+    <span className="text-yellow-500">⬇️</span> // Transfer Keluar
+  ) : null;
+
   return (
-    <div className="flex items-center justify-between py-2">
-      <div className="flex items-center gap-3">
-        {/* Icon Placeholder */}
-        <div className="w-8 h-8 rounded-full bg-neutral-100 flex items-center justify-center text-sm">
-          🧾
+    <div className="py-3 border-b border-neutral-100 text-sm">
+      <div className="grid grid-cols-3 gap-2 items-center">
+        <div className="truncate font-medium">
+          {transaction.description || transaction.category.name}
         </div>
-        <div className="flex flex-col">
-          <span className="font-medium text-sm">
-            {transaction.description || transaction.category.name}
-          </span>
-          <span className="text-xs text-neutral-500">
-            {transaction.category.name}
-          </span>
+        <div className="text-neutral-500 truncate">
+          {transaction.category.name}
+        </div>
+        <div className={`text-right font-semibold ${amountColor}`}>
+          {amountSign}
+          {formatCurrency(transaction.amount)}
         </div>
       </div>
-
-      <div className={`text-sm font-semibold ${amountColor}`}>
-        {amountSign}
-        {formatCurrency(transaction.amount)}
+      <div className="mt-1 text-xs text-neutral-400">
+        {isTransfer ? (
+          <div className="flex items-center space-x-1">
+            {/* Ikon Transfer */}
+            {transferIcon}
+            <span>{secondaryText}</span>
+          </div>
+        ) : (
+          secondaryText
+        )}
       </div>
     </div>
   );
