@@ -32,7 +32,8 @@
       "@/utils/*": ["./src/utils/*"],
       "@/types/*": ["./src/types/*"],
       "@/constants/*": ["./src/constants/*"],
-      "@/styles/*": ["./src/styles/*"]
+      "@/styles/*": ["./src/styles/*"],
+      "@/stores/*": ["./src/stores/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

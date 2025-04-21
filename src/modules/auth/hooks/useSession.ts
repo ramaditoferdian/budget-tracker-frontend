@@ -17,7 +17,6 @@ export const useSession = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("bt:token");
-    console.log(token);
 
     if (!token) {
       setIsLoading(false);
@@ -26,8 +25,6 @@ export const useSession = () => {
 
     try {
       const decoded = jwtDecode<TokenPayload>(token);
-
-      console.log(decoded);
       
       // optional: check if token expired
       if (decoded.exp * 1000 < Date.now()) {

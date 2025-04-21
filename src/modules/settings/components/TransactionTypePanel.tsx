@@ -8,7 +8,7 @@ export default function TransactionTypePanel() {
     <div className="space-y-6">
       <h2 className="text-2xl font-semibold">📂 Manage Transaction Types</h2>
       <p className="text-muted-foreground">Create and organize your transaction types.</p>
-      <TransactionTypeForm />
+      {/* <TransactionTypeForm /> */}
       <TransactionTypeList />
     </div>
   )
