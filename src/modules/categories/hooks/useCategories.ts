@@ -4,10 +4,10 @@ import { createCategory, deleteCategory, getCategories, updateCategory } from '.
 import { CategoryListResponse, CategoryPayload } from '@/types'
 import { usePessimisticUpdate } from '@/hooks/usePessimisticUpdate' // ← import hook global
 
-export const useCategories = () => {
+export const useCategories = (params?: Record<string, any>) => {
   return useQuery<CategoryListResponse, Error>({
-    queryKey: ['categories'],
-    queryFn: getCategories,
+    queryKey: ['categories', params],
+    queryFn: () => getCategories(params),
     select: (data) => data,
   })
 }

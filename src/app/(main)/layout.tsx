@@ -25,7 +25,7 @@ export default function MainLayout({
         {/* Content */}
         <div className="flex flex-col h-full overflow-hidden">
           <Navbar />
-          <main className="flex-1 overflow-y-auto p-4">{children}</main>
+          <main className="flex-1 overflow-y-auto">{children}</main>
         </div>
       </div>
     </AuthGuard>
