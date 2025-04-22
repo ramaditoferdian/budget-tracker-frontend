@@ -6,6 +6,7 @@ import { Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useCategories, useDeleteCategory } from '@/modules/categories/hooks/useCategories'
 import { toast } from 'sonner'
+import { getBadgeColor } from '@/utils/format-color'
 
 export default function CategoryList() {
   const { data: categories, isLoading, isError } = useCategories()
@@ -13,14 +14,14 @@ export default function CategoryList() {
 
   const handleDelete = async (id: string) => {
     try {
-      // Panggil fungsi deleteCategory untuk menghapus kategori
+      // Call the deleteCategory function to remove the category
       await deleteCategory(id)
 
-      // Tampilkan toast sukses jika berhasil
-      toast.success('Kategori berhasil dihapus!')
+      // Show success toast if deletion is successful
+      toast.success('Category successfully deleted!')
     } catch (error) {
-      // Tampilkan toast error jika gagal
-      toast.error('Gagal menghapus kategori!')
+      // Show error toast if deletion fails
+      toast.error('Failed to delete category!')
     }
   }
 
@@ -35,10 +36,13 @@ export default function CategoryList() {
   return (
     <div className="grid gap-3">
       {categories?.data.map((cat) => (
-        <Card key={cat.id} className="flex items-center justify-between p-4">
+        <Card key={cat.id} className={`flex items-center justify-between p-4 ${getBadgeColor(cat.transactionType?.name)}`}>
           <div>
             <div className="font-medium">{cat.name}</div>
-            <Badge variant="outline" className="mt-1 text-xs">
+            <Badge
+              variant="outline"
+              className={`mt-1 text-xs ${getBadgeColor(cat.transactionType?.name)} border border-black/50 drop-shadow-md shadow-lg`}
+            >
               {cat.transactionType?.name}
             </Badge>
           </div>

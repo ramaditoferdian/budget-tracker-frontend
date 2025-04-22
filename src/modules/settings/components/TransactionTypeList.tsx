@@ -6,6 +6,7 @@ import { Trash2 } from 'lucide-react'
 import { useDeleteTransactionType, useTransactionTypes } from '@/modules/transactionTypes/hooks/useTransactionTypes'
 import { toast } from 'sonner'
 import Loading from '@/components/Loading'
+import { getBadgeColor } from '@/utils/format-color'
 
 
 export default function TransactionTypeList() {
@@ -27,7 +28,7 @@ export default function TransactionTypeList() {
   return (
     <div className="grid gap-3">
       {data.data.map((type) => (
-        <Card key={type.id} className="flex items-center justify-between p-4">
+        <Card key={type.id} className={`flex items-center justify-between p-4 ${getBadgeColor(type.name)}`}>
           <div className="font-medium">{type.name}</div>
           {type.userId && (
             <Button
