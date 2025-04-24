@@ -8,7 +8,7 @@ import { Home, List, Settings } from 'lucide-react';
 const navItems = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
   { name: 'Transactions', href: '/transactions', icon: List },
-  { name: 'Settings', href: '/settings', icon: Settings },
+  { name: 'Settings', href: '/settings?panel=sources', icon: Settings },
 ];
 
 export default function BottomNavbar() {
@@ -17,14 +17,16 @@ export default function BottomNavbar() {
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 flex justify-around items-center border-t border-border md:hidden h-14 bg-white">
       {navItems.map(({ name, href, icon: Icon }) => {
-        const isActive = pathname === href;
+        const isActive = pathname === href || pathname.startsWith(href.split('?')[0]);
         return (
           <Link
             key={href}
             href={href}
             className={cn(
-              'flex flex-col items-center justify-center text-xs transition px-2',
-              isActive ? 'text-foreground font-medium' : 'text-muted-foreground hover:text-foreground'
+              'flex flex-col items-center justify-center text-xs transition px-2 h-full border-t-2',
+              isActive
+                ? 'text-foreground font-semibold border-primary'
+                : 'text-muted-foreground hover:text-foreground border-transparent'
             )}
           >
             <Icon className="w-5 h-5 mb-0.5" />

@@ -191,13 +191,16 @@ const TransactionsHeader = () => {
           </Popover>
         </div>
 
-        <div className="flex gap-2 items-center">
-          <Button onClick={handleSubmit} variant="default" className="px-4 text-sm">
-            Apply
-          </Button>
-          <Button onClick={handleReset} variant="ghost" className="px-4 text-sm">
-            Reset
-          </Button>
+        <div className="flex gap-2 items-center justify-between md:justify-normal">
+          <div className="flex gap-2">
+            <Button onClick={handleSubmit} variant="default" className="px-4 text-sm">
+              Apply
+            </Button>
+            <Button onClick={handleReset} variant="ghost" className="px-4 text-sm">
+              Reset
+            </Button>
+          </div>
+
           <Button onClick={() => setOpen(true)} variant="default">Add Transaction</Button>
         </div>
       </div>

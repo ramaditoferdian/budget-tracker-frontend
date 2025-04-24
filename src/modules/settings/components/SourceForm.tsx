@@ -17,6 +17,8 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 
 const sourceSchema = z.object({
   name: z.string().min(1, "Nama sumber wajib diisi"),
@@ -27,9 +29,15 @@ const sourceSchema = z.object({
 
 type SourceFormValues = z.infer<typeof sourceSchema>;
 
-export default function SourceForm() {
+function SourceForm({
+  open,
+  setOpen,
+}: {
+  open: boolean;
+  setOpen: (open: boolean) => void; 
+}) {
   const createSource = useCreateSource();
-  const [open, setOpen] = useState(false);
+  
   const [amountDisplay, setAmountDisplay] = useState(formatRupiah("0"));
 
   const {
@@ -61,59 +69,86 @@ export default function SourceForm() {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline">Tambah Sumber Dana</Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="text-base">Tambah Sumber Dana</DialogTitle>
-        </DialogHeader>
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="flex flex-col gap-3 mt-2"
+    >
+      <div>
+        <Input
+          {...register("name")}
+          placeholder="Nama sumber dana (contoh: BCA, Dompet)"
+          className="text-base placeholder:text-muted-foreground"
+        />
+        {errors.name && (
+          <p className="text-sm text-red-500 mt-1">{errors.name.message}</p>
+        )}
+      </div>
 
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="flex flex-col gap-3 mt-2"
+      <div>
+        <Input
+          type="text"
+          value={amountDisplay}
+          onChange={(e) => {
+            const parsed = parseRupiah(e.target.value);
+            setAmountDisplay(formatRupiah(parsed.toString()));
+            setValue("initialAmount", parsed);
+          }}
+          placeholder="Dana awal"
+          className="text-base text-left font-medium"
+        />
+        {errors.initialAmount && (
+          <p className="text-sm text-red-500 mt-1">
+            {errors.initialAmount.message}
+          </p>
+        )}
+      </div>
+
+      <DialogFooter>
+        <Button
+          type="submit"
+          disabled={isSubmitting || createSource.isPending}
         >
-          <div>
-            <Input
-              {...register("name")}
-              placeholder="Nama sumber dana (contoh: BCA, Dompet)"
-              className="text-base placeholder:text-muted-foreground"
-            />
-            {errors.name && (
-              <p className="text-sm text-red-500 mt-1">{errors.name.message}</p>
-            )}
-          </div>
+          {isSubmitting || createSource.isPending ? "Menyimpan..." : "Tambah"}
+        </Button>
+      </DialogFooter>
+    </form>
+  )
+}
 
-          <div>
-            <Input
-              type="text"
-              value={amountDisplay}
-              onChange={(e) => {
-                const parsed = parseRupiah(e.target.value);
-                setAmountDisplay(formatRupiah(parsed.toString()));
-                setValue("initialAmount", parsed);
-              }}
-              placeholder="Dana awal"
-              className="text-base text-left font-medium"
-            />
-            {errors.initialAmount && (
-              <p className="text-sm text-red-500 mt-1">
-                {errors.initialAmount.message}
-              </p>
-            )}
-          </div>
+export default function SourceFormDialog() {
 
-          <DialogFooter>
-            <Button
-              type="submit"
-              disabled={isSubmitting || createSource.isPending}
-            >
-              {isSubmitting || createSource.isPending ? "Menyimpan..." : "Tambah"}
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
-  );
+  const [open, setOpen] = useState(false);
+
+  const isMobile = useIsMobile();
+
+  if (!isMobile) {
+    return (
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <Button variant="outline">Tambah Sumber Dana</Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-base">Tambah Sumber Dana</DialogTitle>
+          </DialogHeader>
+          <SourceForm open={open} setOpen={setOpen} />
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  return (
+<Drawer open={open} onOpenChange={setOpen}>
+        <DrawerTrigger asChild>
+          <Button variant="outline">Tambah Sumber Dana</Button>
+        </DrawerTrigger>
+        <DrawerContent className="p-10">
+          <DrawerHeader>
+            <DrawerTitle className="text-base">Tambah Sumber Dana</DrawerTitle>
+          </DrawerHeader>
+          <SourceForm open={open} setOpen={setOpen} />
+        </DrawerContent>
+      </Drawer>
+
+  )
 }

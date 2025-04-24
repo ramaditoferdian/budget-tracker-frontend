@@ -5,7 +5,7 @@ import TransactionTypeList from './TransactionTypeList'
 
 export default function TransactionTypePanel() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 mb-16">
       <h2 className="text-2xl font-semibold">📂 Manage Transaction Types</h2>
       <p className="text-muted-foreground">Create and organize your transaction types.</p>
       {/* <TransactionTypeForm /> */}

@@ -23,8 +23,6 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions }) => {
 
     setTransactionEdit(transaction);
     setOpen(true);
-
-    alert(`Edit "${transaction.description}"`);
   };
 
   const handleDelete = (id: string) => {
