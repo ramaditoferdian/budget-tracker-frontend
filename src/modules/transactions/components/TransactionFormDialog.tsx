@@ -60,6 +60,8 @@ export default function TransactionFormDialog({
 }: TransactionFormDialogProps) {
   const [amountDisplay, setAmountDisplay] = useState(formatRupiah('0'));
 
+  const [isInitialEdit, setIsInitialEdit] = useState(true);
+
   const { data: transactionTypes } = useTransactionTypes();
   const { data: categories } = useCategories();
   const { data: sources } = useSources();
@@ -97,7 +99,7 @@ export default function TransactionFormDialog({
   );
 
   useEffect(() => {
-    if (mode === 'edit' && transaction) {
+    if (open && mode === 'edit' && transaction) {
       reset({
         typeId: transaction.typeId,
         categoryId: transaction.categoryId || '',
@@ -108,24 +110,48 @@ export default function TransactionFormDialog({
         date: transaction.date,
       });
       setAmountDisplay(formatRupiah(transaction.amount.toString()));
+      setIsInitialEdit(true); // set true karena form baru dibuka
     }
-
-    if (!open) {
-      reset();
-      setAmountDisplay(formatRupiah('0'));
-    }
-  }, [transaction, mode, open, reset]);
+  }, [open, mode, transaction, reset]);
+  
 
   useEffect(() => {
+    if (!open) {
+      const timeout = setTimeout(() => {
+        reset({
+          typeId: '',
+          categoryId: '',
+          sourceId: '',
+          targetSourceId: '',
+          amount: 0,
+          description: '',
+          date: new Date().toISOString().split('T')[0],
+        });
+        setAmountDisplay(formatRupiah('0'));
+        setIsInitialEdit(true);
+      }, 200);
+  
+      return () => clearTimeout(timeout);
+    }
+  }, [open, reset]);
+  
+
+  useEffect(() => {
+    if (isInitialEdit) {
+      return;
+    }
     setValue('categoryId', '');
     setValue('sourceId', '');
     setValue('targetSourceId', '');
-  }, [selectedTypeId, setValue]);
+  }, [isInitialEdit, selectedTypeId, setValue]);
 
   const onSubmit = (values: TransactionFormValues) => {
     if (mode === 'edit' && transaction?.id) {
       updateTransaction.mutate(
-        { id: transaction.id, payload: values },
+        { id: transaction.id, payload: {
+          ...values,
+          targetSourceId: null
+        } },
         {
           onSuccess: () => {
             toast.success('Transaction updated successfully!');

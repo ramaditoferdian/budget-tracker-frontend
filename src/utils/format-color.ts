@@ -6,7 +6,7 @@ export const getBadgeColor = (transactionType: string | null) => {
     case 'Expense':
       return 'bg-red-100 text-red-700'; // Light red for expense (pastel)
     case 'Transfer':  
-      return 'bg-gray-100 text-gray-700'; // Neutral gray for other types (subtle)
+      return 'bg-blue-100 text-blue-700'; // Neutral blue for other types (subtle)
     default:
       return ''
   }
@@ -19,7 +19,7 @@ export const getColorSelect = (transactionTypeId: string | null) => {
     case 'expense-type':
       return 'bg-red-100 text-red-700'; // Light red for expense (pastel)
     case 'transfer-type':  
-      return 'bg-gray-100 text-gray-700'; // Neutral gray for other types (subtle)
+      return 'bg-blue-100 text-blue-700'; // Neutral blue for other types (subtle)
     default:
       return ''
   }

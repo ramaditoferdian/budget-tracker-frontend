@@ -64,7 +64,7 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions }) => {
         {Object.entries(grouped).map(([label, group]) => (
           <div key={label}>
             <h3 className="text-sm font-semibold text-neutral-500 mb-2">{label}</h3>
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col">
               {group.map((tx) => (
                 <TransactionItem
                   key={tx.id}
