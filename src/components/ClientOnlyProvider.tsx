@@ -9,7 +9,7 @@ const ClientOnlyProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Toaster position="top-right" richColors />
+      <Toaster position="top-right" richColors expand />
       {children}
     </QueryClientProvider>
   );

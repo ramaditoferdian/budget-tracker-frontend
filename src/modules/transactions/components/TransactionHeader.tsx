@@ -1,29 +1,27 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
+import React, { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { useTransactionFilters } from "@/modules/transactions/hooks/useTransactionFilters";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { endOfMonth, format, startOfMonth } from "date-fns";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import TransactionFormDialog from "./TransactionFormDialog";
-import { useTransactionTypes } from "@/modules/transactionTypes/hooks/useTransactionTypes";
-import { useCategories } from "@/modules/categories/hooks/useCategories";
+} from '@/components/ui/select';
+import { useTransactionFilters } from '@/modules/transactions/hooks/useTransactionFilters';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { endOfMonth, format, startOfMonth } from 'date-fns';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import TransactionFormDialog from './TransactionFormDialog';
+import { useTransactionTypes } from '@/modules/transactionTypes/hooks/useTransactionTypes';
+import { useCategories } from '@/modules/categories/hooks/useCategories';
+import { useDialog } from '@/hooks/useDialog';
 
 const TransactionsHeader = () => {
-  const [open, setOpen] = useState(false);
+  // const [open, setOpen] = useState(false);
+  const { open, setOpen } = useDialog('transaction-form:create');
 
   const {
     typeId: storeTypeId,
@@ -38,29 +36,22 @@ const TransactionsHeader = () => {
   } = useTransactionFilters();
 
   const [filters, setFilters] = useState({
-    typeId: storeTypeId || "",
-    categoryId: storeCategoryId || "",
+    typeId: storeTypeId || '',
+    categoryId: storeCategoryId || '',
     startDate: storeStartDate || null,
     endDate: storeEndDate || null,
   });
 
-  const {
-    data: transactionTypeData,
-    isLoading: isLoadingTypes,
-  } = useTransactionTypes();
+  const { data: transactionTypeData, isLoading: isLoadingTypes } = useTransactionTypes();
 
-  const {
-    data: categoryData,
-    isLoading: isLoadingCategories,
-  } = useCategories({ transactionTypeId: filters.typeId });
+  const { data: categoryData, isLoading: isLoadingCategories } = useCategories({
+    transactionTypeId: filters.typeId,
+  });
 
   const initialStart = filters.startDate ? new Date(filters.startDate) : null;
   const initialEnd = filters.endDate ? new Date(filters.endDate) : null;
 
-  const [range, setRange] = useState<[Date | null, Date | null]>([
-    initialStart,
-    initialEnd,
-  ]);
+  const [range, setRange] = useState<[Date | null, Date | null]>([initialStart, initialEnd]);
 
   const handleDateRangeChange = (dates: [Date | null, Date | null]) => {
     const [start, end] = dates;
@@ -68,12 +59,12 @@ const TransactionsHeader = () => {
     if (start)
       setFilters((prev) => ({
         ...prev,
-        startDate: start.toISOString().split("T")[0],
+        startDate: start.toISOString().split('T')[0],
       }));
     if (end)
       setFilters((prev) => ({
         ...prev,
-        endDate: end.toISOString().split("T")[0],
+        endDate: end.toISOString().split('T')[0],
       }));
   };
 
@@ -84,7 +75,7 @@ const TransactionsHeader = () => {
     ]);
   }, [filters.startDate, filters.endDate]);
 
-  const isCategoryDisabled = !filters.typeId || filters.typeId === "transfer-type";
+  const isCategoryDisabled = !filters.typeId || filters.typeId === 'transfer-type';
 
   const handleSubmit = () => {
     setTypeId(filters.typeId);
@@ -96,10 +87,10 @@ const TransactionsHeader = () => {
   const handleReset = () => {
     resetFilters();
     setFilters({
-      typeId: "",
-      categoryId: "",
-      startDate: format(startOfMonth(new Date()), "yyyy-MM-dd") || null,
-      endDate: format(endOfMonth(new Date()), "yyyy-MM-dd") || null,
+      typeId: '',
+      categoryId: '',
+      startDate: format(startOfMonth(new Date()), 'yyyy-MM-dd') || null,
+      endDate: format(endOfMonth(new Date()), 'yyyy-MM-dd') || null,
     });
   };
 
@@ -107,20 +98,14 @@ const TransactionsHeader = () => {
     <>
       {/* MODAL */}
 
-      <TransactionFormDialog
-        mode="create"
-        open={open}
-        setOpen={setOpen}
-      />
+      <TransactionFormDialog mode="create" open={open} setOpen={setOpen} />
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
         <div className="flex flex-wrap gap-2 items-center">
           {/* Tipe */}
           <Select
-            onValueChange={(value) =>
-              setFilters((prev) => ({ ...prev, typeId: value }))
-            }
-            value={filters.typeId || ""}
+            onValueChange={(value) => setFilters((prev) => ({ ...prev, typeId: value }))}
+            value={filters.typeId || ''}
           >
             <SelectTrigger className="w-36 text-sm">
               <SelectValue placeholder="Type" />
@@ -140,18 +125,12 @@ const TransactionsHeader = () => {
 
           {/* Kategori */}
           <Select
-            onValueChange={(value) =>
-              setFilters((prev) => ({ ...prev, categoryId: value }))
-            }
-            value={filters.categoryId || ""}
+            onValueChange={(value) => setFilters((prev) => ({ ...prev, categoryId: value }))}
+            value={filters.categoryId || ''}
             disabled={isCategoryDisabled || isLoadingCategories}
           >
             <SelectTrigger className="w-36 text-sm">
-              <SelectValue
-                placeholder={
-                  isCategoryDisabled ? "—" : "Category"
-                }
-              />
+              <SelectValue placeholder={isCategoryDisabled ? '—' : 'Category'} />
             </SelectTrigger>
             <SelectContent>
               {isLoadingCategories ? (
@@ -171,11 +150,11 @@ const TransactionsHeader = () => {
             <PopoverTrigger asChild>
               <Button variant="outline" className="w-52 justify-start text-sm font-normal">
                 {filters.startDate && filters.endDate
-                  ? `${format(new Date(filters.startDate), "dd/MM/yyyy")} – ${format(
+                  ? `${format(new Date(filters.startDate), 'dd/MM/yyyy')} – ${format(
                       new Date(filters.endDate),
-                      "dd/MM/yyyy"
+                      'dd/MM/yyyy'
                     )}`
-                  : "Date"}
+                  : 'Date'}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
@@ -201,7 +180,9 @@ const TransactionsHeader = () => {
             </Button>
           </div>
 
-          <Button onClick={() => setOpen(true)} variant="default">Add Transaction</Button>
+          <Button onClick={() => setOpen(true)} variant="default">
+            Add Transaction
+          </Button>
         </div>
       </div>
     </>
