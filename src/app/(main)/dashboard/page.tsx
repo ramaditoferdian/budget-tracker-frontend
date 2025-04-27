@@ -1,7 +1,7 @@
+import DashboardPage from '@/modules/dashboard/components/DashboardPage';
+
 const Dashboard = () => {
-  return (
-    <h1>Dashboard Page</h1>
-  );
-}
+  return <DashboardPage />;
+};
 
 export default Dashboard;
