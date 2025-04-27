@@ -158,7 +158,7 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({ onSubmit, onRes
                 <SelectItem value="loading">Loading...</SelectItem>
               ) : (
                 transactionTypeData?.data?.map((type) => (
-                  <SelectItem key={type.id} value={type.id.toString()}>
+                  <SelectItem className="cursor-pointer" key={type.id} value={type.id.toString()}>
                     {type.name}
                   </SelectItem>
                 ))
@@ -199,6 +199,7 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({ onSubmit, onRes
                           <CommandItem
                             key={category.id}
                             value={category.id.toString()}
+                            className="cursor-pointer"
                             onSelect={(currentValue) => {
                               updateFilters({ categoryId: currentValue });
                               setIsOpenCategory(false);
