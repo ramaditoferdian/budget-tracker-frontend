@@ -41,7 +41,7 @@ export default function CategoryList() {
             <div className="font-medium">{cat.name}</div>
             <Badge
               variant="outline"
-              className={`mt-1 text-xs ${getBadgeColor(cat.transactionType?.name)} border border-black/50 drop-shadow-md shadow-lg`}
+              className={`mt-1 text-xs ${getBadgeColor(cat.transactionType?.name)} border border-black/50 shadow-lg`}
             >
               {cat.transactionType?.name}
             </Badge>

@@ -5,40 +5,48 @@ import TransactionItem from './TransactionItem';
 import { formatToGroupLabel } from '@/utils/format';
 import { useDeleteTransaction } from '../hooks/useTransactions';
 import TransactionFormDialog from './TransactionFormDialog';
+import { useDialog } from '@/hooks/useDialog';
+import ConfirmationDialog from '@/components/shared/ConfirmationDialog';
+import { toast } from 'sonner';
+import { getConfirmationMessage } from '@/utils/helpers/confirmation';
 
 interface TransactionListProps {
   transactions: Transaction[];
 }
 
 const TransactionList: React.FC<TransactionListProps> = ({ transactions }) => {
+  const editDialog = useDialog('transaction-form:edit');
+  const deleteDialog = useDialog('delete-transaction');
 
-  const [open, setOpen] = useState(false);
   const [transactionEdit, setTransactionEdit] = useState<Transaction>();
+  const [transactionToDelete, setTransactionToDelete] = useState<Transaction>();
 
-  const { mutate: deleteTx } = useDeleteTransaction();
+  const deleteTransaction = useDeleteTransaction();
+
+  const deleteConfirmationMessage = getConfirmationMessage('delete', 'transaction');
 
   const handleEdit = (transaction: Transaction) => {
-    // Tergantung modal/form edit kamu gimana, ini contoh placeholder
-    console.log('Edit transaction:', transaction);
-
     setTransactionEdit(transaction);
-    setOpen(true);
+    editDialog.setOpen(true);
   };
 
-  const handleDelete = (id: string) => {
-    const confirmed = confirm('Are you sure you want to delete this transaction?');
-    if (confirmed) {
-      deleteTx(id);
+  const handleDelete = (transaction: Transaction) => {
+    setTransactionToDelete(transaction);
+    deleteDialog.setOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (transactionToDelete) {
+      deleteTransaction.mutate(transactionToDelete.id, {
+        onSuccess: () => {
+          toast.success('Transaction deleted successfully!');
+        },
+        onError: () => {
+          toast.error('Failed to delete transaction');
+        },
+      });
     }
   };
-
-  if (transactions.length === 0) {
-    return (
-      <div className="text-center text-neutral-400 py-8">
-        <p>No transactions to show</p>
-      </div>
-    );
-  }
 
   const grouped = transactions.reduce<Record<string, Transaction[]>>((acc, tx) => {
     const label = formatToGroupLabel(tx.date);
@@ -47,17 +55,37 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions }) => {
     return acc;
   }, {});
 
+  if (Object.keys(grouped).length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full">
+        <span className="text-sm text-neutral-500">No transactions found</span>
+      </div>
+    );
+  }
+
   return (
     <>
-
-      {/* MODAL */}
+      {/* EDIT TRANSACTION MODAL */}
       <TransactionFormDialog
         mode="edit"
-        open={open}
-        setOpen={setOpen}
+        open={editDialog.open}
+        setOpen={editDialog.setOpen}
         transaction={transactionEdit}
       />
 
+      {/* DELETE CONFIRMATION MODAL */}
+      <ConfirmationDialog
+        name="delete-transaction"
+        title={deleteConfirmationMessage.title}
+        description={deleteConfirmationMessage.description}
+        confirmText={deleteConfirmationMessage.confirmText}
+        cancelText={deleteConfirmationMessage.cancelText}
+        open={deleteDialog.open}
+        setOpen={deleteDialog.setOpen}
+        onConfirm={confirmDelete}
+      />
+
+      {/* TRANSACTION LIST */}
       <div className="space-y-8">
         {Object.entries(grouped).map(([label, group]) => (
           <div key={label}>
@@ -68,7 +96,7 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions }) => {
                   key={tx.id}
                   transaction={tx}
                   onEdit={() => handleEdit(tx)}
-                  onDelete={() => handleDelete(tx.id)}
+                  onDelete={() => handleDelete(tx)}
                 />
               ))}
             </div>
