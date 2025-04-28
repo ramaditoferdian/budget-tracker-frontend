@@ -4,9 +4,9 @@ import ExpenseAnalysis from '@/modules/dashboard/components/ExpenseAnalysis';
 
 const DashboardPage = () => {
   return (
-    <div className="w-full h-screen flex">
+    <div className="w-full flex flex-col md:flex-row">
       <BigCalendar />
-      <div className="w-full h-screen overflow-y-scroll" />
+      <div className="w-full overflow-y-scroll" />
     </div>
   );
 };

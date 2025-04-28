@@ -59,7 +59,7 @@ export interface TransactionListResponse {
 
 export interface TransactionQueryParams {
   sortBy?: 'createdAt' | 'amount' | 'updatedAt' | 'date';
-  order?: "asc" | "desc";
+  order?: 'asc' | 'desc';
   startDate?: string; // YYYY-MM-DD
   endDate?: string; // YYYY-MM-DD
   typeId?: string;
@@ -76,6 +76,10 @@ export interface TransactionPayload {
   sourceId?: string;
   targetSourceId?: string | null;
   categoryId?: string;
+}
+
+export interface TransactionCalendarQueryParams {
+  month: string; // YYYY-MM
 }
 
 export interface TransactionCalendarItem {

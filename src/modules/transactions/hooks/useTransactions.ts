@@ -5,8 +5,11 @@ import {
   createTransaction,
   updateTransaction,
   deleteTransaction,
+  getTransactionCalendar,
 } from '../services/transactionService';
 import {
+  TransactionCalendarQueryParams,
+  TransactionCalendarResponse,
   TransactionListResponse,
   TransactionPayload,
   TransactionQueryParams,
@@ -19,6 +22,15 @@ export const useTransactions = (params: TransactionQueryParams = {}) => {
     queryFn: () => getTransactions(params),
     select: (data) => data,
     placeholderData: (prev) => prev, // tetap gunakan data sebelumnya saat loading
+  });
+};
+
+export const useTransactionCalendar = (params: TransactionCalendarQueryParams) => {
+  return useQuery<TransactionCalendarResponse, Error>({
+    queryKey: ['transaction-calendar-view', params],
+    queryFn: () => getTransactionCalendar(params.month),
+    select: (data) => data,
+    placeholderData: (prev) => prev,
   });
 };
 
@@ -36,13 +48,8 @@ export const useCreateTransaction = () => {
 export const useUpdateTransaction = () => {
   const { onSuccess, onError } = usePessimisticUpdate('transactions');
   const { mutate, isPending, isError, isSuccess } = useMutation({
-    mutationFn: ({
-      id,
-      payload,
-    }: {
-      id: string;
-      payload: TransactionPayload;
-    }) => updateTransaction(id, payload),
+    mutationFn: ({ id, payload }: { id: string; payload: TransactionPayload }) =>
+      updateTransaction(id, payload),
     onSuccess,
     onError,
   });

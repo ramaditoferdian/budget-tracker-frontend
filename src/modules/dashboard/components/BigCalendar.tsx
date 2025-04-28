@@ -1,6 +1,17 @@
 'use client';
 
+import Loading from '@/components/Loading';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { useTransactionCalendar } from '@/modules/transactions/hooks/useTransactions';
 import { formatCurrency } from '@/utils/format';
+import { getMonth } from 'date-fns';
+import { CalendarDaysIcon } from 'lucide-react';
 import { useState, useEffect, useMemo } from 'react';
 
 interface CalendarData {
@@ -34,227 +45,19 @@ const getLastDayOfMonth = (month: number, year: number) => new Date(year, month 
 const getTotalDaysInPrevMonth = (month: number, year: number) => new Date(year, month, 0).getDate();
 
 const BigCalendar = () => {
-  const [selectedMonth, setSelectedMonth] = useState<number>(3); // April (month index is 0-based)
+  const [selectedMonth, setSelectedMonth] = useState<number>(3);
   const [selectedYear, setSelectedYear] = useState<number>(2025);
-  const [calendarData, setCalendarData] = useState<CalendarData[]>([]);
 
-  const fetchCalendarData = async () => {
-    // Data dummy untuk April 2025
-    const dummyData = [
-      {
-        date: '2025-04-01',
-        types: {},
-        netAmount: 0,
-      },
-      {
-        date: '2025-04-02',
-        types: {},
-        netAmount: 0,
-      },
-      {
-        date: '2025-04-03',
-        types: {},
-        netAmount: 0,
-      },
-      {
-        date: '2025-04-04',
-        types: {},
-        netAmount: 0,
-      },
-      {
-        date: '2025-04-05',
-        types: {
-          'expense-type': 102500,
-        },
-        netAmount: -102500,
-      },
-      {
-        date: '2025-04-06',
-        types: {
-          'expense-type': 671765,
-          'transfer-type': 479000,
-        },
-        netAmount: -671765,
-      },
-      {
-        date: '2025-04-07',
-        types: {
-          'expense-type': 124900,
-          'transfer-type': 42400,
-        },
-        netAmount: -124900,
-      },
-      {
-        date: '2025-04-08',
-        types: {
-          'expense-type': 35300,
-          'transfer-type': 42400,
-        },
-        netAmount: -35300,
-      },
-      {
-        date: '2025-04-09',
-        types: {
-          'expense-type': 89588,
-          'transfer-type': 42400,
-        },
-        netAmount: -89588,
-      },
-      {
-        date: '2025-04-10',
-        types: {
-          'expense-type': 48600,
-        },
-        netAmount: -48600,
-      },
-      {
-        date: '2025-04-11',
-        types: {
-          'expense-type': 35000,
-        },
-        netAmount: -35000,
-      },
-      {
-        date: '2025-04-12',
-        types: {
-          'expense-type': 115000,
-          'transfer-type': 55240,
-        },
-        netAmount: -115000,
-      },
-      {
-        date: '2025-04-13',
-        types: {
-          'expense-type': 132900,
-          'transfer-type': 300000,
-        },
-        netAmount: -132900,
-      },
-      {
-        date: '2025-04-14',
-        types: {
-          'expense-type': 26400,
-          'transfer-type': 48000,
-        },
-        netAmount: -26400,
-      },
-      {
-        date: '2025-04-15',
-        types: {
-          'expense-type': 44000,
-        },
-        netAmount: -44000,
-      },
-      {
-        date: '2025-04-16',
-        types: {
-          'expense-type': 98000,
-        },
-        netAmount: -98000,
-      },
-      {
-        date: '2025-04-17',
-        types: {
-          'expense-type': 298000,
-        },
-        netAmount: -298000,
-      },
-      {
-        date: '2025-04-18',
-        types: {
-          'expense-type': 182000,
-          'transfer-type': 108500,
-        },
-        netAmount: -182000,
-      },
-      {
-        date: '2025-04-19',
-        types: {
-          'expense-type': 284640,
-          'income-type': 2000000,
-        },
-        netAmount: 1715360,
-      },
-      {
-        date: '2025-04-20',
-        types: {},
-        netAmount: 0,
-      },
-      {
-        date: '2025-04-21',
-        types: {
-          'expense-type': 130000,
-        },
-        netAmount: -130000,
-      },
-      {
-        date: '2025-04-22',
-        types: {
-          'expense-type': 1232846,
-          'transfer-type': 74100,
-        },
-        netAmount: -1232846,
-      },
-      {
-        date: '2025-04-23',
-        types: {
-          'expense-type': 43800,
-        },
-        netAmount: -43800,
-      },
-      {
-        date: '2025-04-24',
-        types: {
-          'expense-type': 52000,
-        },
-        netAmount: -52000,
-      },
-      {
-        date: '2025-04-25',
-        types: {
-          'expense-type': 200020,
-          'transfer-type': 82300,
-        },
-        netAmount: -200020,
-      },
-      {
-        date: '2025-04-26',
-        types: {
-          'expense-type': 49500,
-        },
-        netAmount: -49500,
-      },
-      {
-        date: '2025-04-27',
-        types: {
-          'expense-type': 49000,
-          'transfer-type': 36500,
-        },
-        netAmount: -49000,
-      },
-      {
-        date: '2025-04-28',
-        types: {},
-        netAmount: 0,
-      },
-      {
-        date: '2025-04-29',
-        types: {},
-        netAmount: 0,
-      },
-      {
-        date: '2025-04-30',
-        types: {},
-        netAmount: 0,
-      },
-    ];
-
-    setCalendarData(dummyData);
-  };
-
-  useEffect(() => {
-    fetchCalendarData();
+  const monthParam = useMemo(() => {
+    const month = (selectedMonth + 1).toString().padStart(2, '0');
+    return `${selectedYear}-${month}`;
   }, [selectedMonth, selectedYear]);
+
+  const {
+    data: calendarData,
+    isLoading: isLoadingCalendarData,
+    error: errorCalendarData,
+  } = useTransactionCalendar({ month: monthParam });
 
   const totalDaysInMonth = useMemo(
     () => getDaysInMonth(selectedMonth + 1, selectedYear),
@@ -280,7 +83,7 @@ const BigCalendar = () => {
     setSelectedYear(parseInt(event.target.value));
 
   const getNetAmountForDate = (date: number): number => {
-    const data = calendarData.find((item) => new Date(item.date).getDate() === date);
+    const data = calendarData?.data.find((item) => new Date(item.date).getDate() === date);
     return data ? data.netAmount : 0;
   };
 
@@ -294,34 +97,54 @@ const BigCalendar = () => {
     }
   };
 
+  if (isLoadingCalendarData) {
+    return <Loading />;
+  }
+
   return (
     <div className="w-full minw-[400px] max-w-3xl mx-auto p-4 mb-16">
-      <h1 className="text-2xl font-semibold mb-4">Calendar View</h1>
+      <div className="flex items-center gap-2 mb-4">
+        <CalendarDaysIcon className="w-6 h-6 text-primary" />
+        <h1 className="text-2xl font-semibold xl:hidden">Monthly Summary</h1> {/* Mobile */}
+        <h1 className="text-2xl font-semibold hidden xl:block">Calendar View</h1> {/* Desktop */}
+      </div>
 
-      <div className="flex justify-between mb-4">
-        <div>
-          <select
-            value={selectedMonth}
-            onChange={handleMonthChange}
-            className="p-2 border rounded-md"
-          >
+      <div className="flex gap-4 mb-6 items-center w-full">
+        {/* Select Bulan */}
+        <Select
+          value={selectedMonth.toString()}
+          onValueChange={(value) => setSelectedMonth(Number(value))}
+          disabled={isLoadingCalendarData}
+        >
+          <SelectTrigger className="w-[150px]">
+            <SelectValue placeholder="Select month" />
+          </SelectTrigger>
+          <SelectContent>
             {months.map((month, index) => (
-              <option key={index} value={index}>
+              <SelectItem key={index} value={index.toString()}>
                 {month}
-              </option>
+              </SelectItem>
             ))}
-          </select>
-        </div>
-        <div>
-          <select
-            value={selectedYear}
-            onChange={handleYearChange}
-            className="p-2 border rounded-md"
-          >
-            <option value={2025}>2025</option>
-            <option value={2026}>2026</option>
-          </select>
-        </div>
+          </SelectContent>
+        </Select>
+
+        {/* Select Tahun */}
+        <Select
+          value={selectedYear.toString()}
+          onValueChange={(value) => setSelectedYear(Number(value))}
+          disabled={isLoadingCalendarData}
+        >
+          <SelectTrigger className="w-[100px]">
+            <SelectValue placeholder="Select year" />
+          </SelectTrigger>
+          <SelectContent>
+            {[2025, 2026].map((year) => (
+              <SelectItem key={year} value={year.toString()}>
+                {year}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Grid untuk Desktop */}
@@ -359,7 +182,7 @@ const BigCalendar = () => {
               </div>
 
               {/* Nominal di bawah, dengan warna sesuai netAmount */}
-              <div className={`w-full text-[10px] text-center p-1 truncate ${amountColor}`}>
+              <div className={`w-full text-[10px] text-center truncate ${amountColor}`}>
                 {formatCurrency(netAmount)}
               </div>
             </div>
@@ -392,16 +215,16 @@ const BigCalendar = () => {
           return (
             <div
               key={date}
-              className={`flex justify-between items-center p-4 mb-2 rounded-lg border ${amountColor} shadow-md`} // Memberikan warna dan shadow untuk kartu
+              className={`flex justify-between items-center p-4 mb-2 rounded-lg border shadow-md`} // Memberikan warna dan shadow untuk kartu
             >
               <div>
-                <div className="text-lg font-medium">
+                <div className="text-base font-medium">
                   {date} {months[selectedMonth]}
                 </div>{' '}
                 {/* Tanggal dan bulan */}
-                <div className="text-sm text-gray-600">{dayName}</div> {/* Nama hari */}
+                <div className="text-sm text-gray-500">{dayName}</div> {/* Nama hari */}
               </div>
-              <div className="text-sm font-medium">
+              <div className={`text-sm font-medium ${amountColor} p-1 rounded-md text-end`}>
                 {formatCurrency(netAmount)} {/* Nominal transaksi */}
               </div>
             </div>
