@@ -1,8 +1,16 @@
 // src/modules/auth/hooks/useAuth.ts
-import { useMutation } from "@tanstack/react-query";
-import { login, AuthPayload, LoginResponse, RegisterResponse, register } from "../services/authService";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useMutation } from '@tanstack/react-query';
+import {
+  login,
+  AuthPayload,
+  LoginResponse,
+  RegisterResponse,
+  register,
+  OnboardingCompleteResponse,
+  onboardingComplete,
+} from '../services/authService';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 export const useLogin = () => {
   const router = useRouter();
@@ -12,23 +20,55 @@ export const useLogin = () => {
     onSuccess: (response: LoginResponse) => {
       // Pastikan errors == false sebelum melanjutkan
       if (response.errors) {
-        toast.error("Login failed. Please try again.");
+        toast.error('Login failed. Please try again.');
+        return;
+      }
+
+      const token = response.data?.token;
+      const user = response.data?.user;
+
+      if (token) {
+        localStorage.setItem('bt:token', token);
+        toast.success('Login berhasil!');
+
+        if (user?.isFirstTimeLogin) {
+          router.push('/getting-started');
+        } else {
+          router.push('/dashboard');
+        }
+      } else {
+        toast.error('Token tidak ditemukan');
+      }
+    },
+    onError: (err: any) => {
+      const message = err?.response?.data?.errors?.message || 'Gagal login';
+      // toast.error(message);
+      console.log(message);
+    },
+  });
+};
+
+export const useCompleteOnboarding = () => {
+  const router = useRouter();
+
+  return useMutation<OnboardingCompleteResponse>({
+    mutationFn: () => onboardingComplete(),
+    onSuccess: (response: OnboardingCompleteResponse) => {
+      if (response.errors) {
+        toast.error('Onboarding failed. Please try again.');
         return;
       }
 
       const token = response.data?.token;
 
       if (token) {
-        localStorage.setItem("bt:token", token);
-        toast.success("Login berhasil!");
-        router.push("/dashboard");
-      } else {
-        toast.error("Token tidak ditemukan");
+        localStorage.setItem('bt:token', token);
       }
+
+      router.push('/dashboard');
     },
     onError: (err: any) => {
-      const message = err?.response?.data?.errors?.message || "Gagal login";
-      // toast.error(message);
+      const message = err?.response?.data?.errors?.message || 'Gagal onboarding';
       console.log(message);
     },
   });
@@ -42,21 +82,21 @@ export const useRegister = () => {
     onSuccess: (response: RegisterResponse) => {
       // Pastikan errors == false sebelum melanjutkan
       if (response.errors) {
-        toast.error("Register failed. Please try again.");
+        toast.error('Register failed. Please try again.');
         return;
       }
 
       const user = response.data;
 
       if (user) {
-        toast.success("Register berhasil!");
-        router.push("/login");
+        toast.success('Register berhasil!');
+        router.push('/login');
       } else {
-        toast.error("User tidak ditemukan");
+        toast.error('User tidak ditemukan');
       }
     },
     onError: (err: any) => {
-      const message = err?.response?.data?.errors?.message || "Gagal Register";
+      const message = err?.response?.data?.errors?.message || 'Gagal Register';
       // toast.error(message);
       console.log(message);
     },
@@ -67,10 +107,10 @@ export const useLogout = () => {
   const router = useRouter();
 
   const logout = () => {
-    localStorage.removeItem("bt:token");
-    router.push("/login");
+    localStorage.removeItem('bt:token');
+    router.push('/login');
 
-    toast.success("Logout berhasil!");
+    toast.success('Logout berhasil!');
   };
 
   return { logout };
