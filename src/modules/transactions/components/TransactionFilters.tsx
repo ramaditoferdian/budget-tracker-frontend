@@ -194,14 +194,18 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({ onSubmit, onRes
                   ) : (
                     <>
                       <CommandEmpty>No category found.</CommandEmpty>
-                      <CommandGroup>
+                      <CommandGroup className="max-h-40 overflow-y-auto">
                         {categoryData?.data?.map((category) => (
                           <CommandItem
                             key={category.id}
-                            value={category.id.toString()}
-                            className="cursor-pointer"
+                            value={category.name.toLowerCase()}
+                            className="cursor-pointer border border-b-1 border-muted"
                             onSelect={(currentValue) => {
-                              updateFilters({ categoryId: currentValue });
+                              const categoryId = categoryData.data?.find(
+                                (cat) => cat.id.toString() === currentValue
+                              )?.id;
+
+                              updateFilters({ categoryId: categoryId?.toString() || '' });
                               setIsOpenCategory(false);
                             }}
                           >
