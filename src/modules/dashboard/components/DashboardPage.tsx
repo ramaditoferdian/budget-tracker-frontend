@@ -1,12 +1,11 @@
 import BigCalendar from '@/modules/dashboard/components/BigCalendar';
-import DailyExpenseSummary from '@/modules/dashboard/components/DailyExpenseSummary';
-import ExpenseAnalysis from '@/modules/dashboard/components/ExpenseAnalysis';
+import Summary from './Summary';
 
 const DashboardPage = () => {
   return (
-    <div className="w-full flex flex-col md:flex-row">
+    <div className="w-full flex flex-col lg:flex-row pb-16">
+      <Summary />
       <BigCalendar />
-      <div className="w-full overflow-y-scroll" />
     </div>
   );
 };

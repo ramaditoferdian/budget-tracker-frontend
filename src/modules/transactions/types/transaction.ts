@@ -95,6 +95,10 @@ export interface TransactionCalendarResponse {
   errors: boolean;
 }
 
+export interface TransactionSummaryQueryParams {
+  month: string; // YYYY-MM
+}
+
 export interface TransactionSummary {
   month: string; // format YYYY-MM
   totalPemasukan: number;

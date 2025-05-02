@@ -6,6 +6,7 @@ import {
   updateTransaction,
   deleteTransaction,
   getTransactionCalendar,
+  getTransactionSummary,
 } from '../services/transactionService';
 import {
   TransactionCalendarQueryParams,
@@ -13,6 +14,8 @@ import {
   TransactionListResponse,
   TransactionPayload,
   TransactionQueryParams,
+  TransactionSummaryQueryParams,
+  TransactionSummaryResponse,
 } from '@/types';
 import { usePessimisticUpdate } from '@/hooks/usePessimisticUpdate';
 
@@ -29,6 +32,15 @@ export const useTransactionCalendar = (params: TransactionCalendarQueryParams) =
   return useQuery<TransactionCalendarResponse, Error>({
     queryKey: ['transaction-calendar-view', params],
     queryFn: () => getTransactionCalendar(params.month),
+    select: (data) => data,
+    placeholderData: (prev) => prev,
+  });
+};
+
+export const useTransactionSummary = (params: TransactionSummaryQueryParams) => {
+  return useQuery<TransactionSummaryResponse, Error>({
+    queryKey: ['transaction-summary', params],
+    queryFn: () => getTransactionSummary(params.month),
     select: (data) => data,
     placeholderData: (prev) => prev,
   });
