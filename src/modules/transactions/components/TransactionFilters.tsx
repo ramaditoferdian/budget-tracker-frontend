@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -16,7 +16,6 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { useTransactionTypes } from '@/modules/transactionTypes/hooks/useTransactionTypes';
 import { useCategories } from '@/modules/categories/hooks/useCategories';
 import { Calendar1, Check, ChevronsUpDown, Settings2 } from 'lucide-react';
-import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils'; // pastikan ada cn helper
 import {
   Command,
@@ -26,6 +25,8 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { isValidDateParam } from '@/utils/validate';
 
 interface TransactionFiltersProps {
   onSubmit: (filters: {
@@ -38,11 +39,17 @@ interface TransactionFiltersProps {
 }
 
 const TransactionFilters: React.FC<TransactionFiltersProps> = ({ onSubmit, onReset }) => {
+  const router = useRouter();
+
+  const searchParams = useSearchParams();
+  const startDate = searchParams.get('start_date');
+  const endDate = searchParams.get('end_date');
+
   const [filters, setFilters] = useState({
     typeId: '',
     categoryId: '',
-    startDate: format(startOfMonth(new Date()), 'yyyy-MM-dd'),
-    endDate: format(endOfMonth(new Date()), 'yyyy-MM-dd'),
+    startDate: '',
+    endDate: '',
   });
 
   const { data: transactionTypeData, isLoading: isLoadingTypes } = useTransactionTypes();
@@ -56,7 +63,6 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({ onSubmit, onRes
   ]);
 
   const [isOpen, setIsOpen] = useState(false);
-  const [searchCategory, setSearchCategory] = useState('');
   const [isOpenCategory, setIsOpenCategory] = useState(false);
 
   const isCategoryDisabled = !filters.typeId || filters.typeId === 'transfer-type';
@@ -87,15 +93,66 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({ onSubmit, onRes
     };
     setFilters(resetValues);
     setRange([new Date(resetValues.startDate), new Date(resetValues.endDate)]);
-    setSearchCategory('');
     onReset();
     onSubmit(resetValues);
   };
 
-  const filteredCategories =
-    categoryData?.data?.filter((category) =>
-      category.name.toLowerCase().includes(searchCategory.toLowerCase())
-    ) || [];
+  useEffect(() => {
+    if (startDate == null && endDate == null) {
+      handleReset();
+    }
+  }, [startDate, endDate]);
+
+  useEffect(() => {
+    const rawStart = searchParams.get('start_date');
+    const rawEnd = searchParams.get('end_date');
+
+    const isStartValid = isValidDateParam(rawStart);
+    const isEndValid = isValidDateParam(rawEnd);
+
+    if (!isStartValid || !isEndValid) {
+      const params = new URLSearchParams(searchParams.toString());
+
+      params.delete('start_date');
+      params.delete('end_date');
+
+      const newUrl = `/transactions?${params.toString()}`;
+      router.replace(newUrl);
+    }
+  }, [searchParams, router]);
+
+  useEffect(() => {
+    const rawStart = searchParams.get('start_date');
+    const rawEnd = searchParams.get('end_date');
+
+    const isStartValid = isValidDateParam(rawStart);
+    const isEndValid = isValidDateParam(rawEnd);
+
+    const newParams = new URLSearchParams(searchParams.toString());
+
+    const defaultStart = format(startOfMonth(new Date()), 'yyyy-MM-dd');
+    const defaultEnd = format(endOfMonth(new Date()), 'yyyy-MM-dd');
+
+    const startDate = isStartValid && rawStart ? rawStart : defaultStart;
+    const endDate = isEndValid && rawEnd ? rawEnd : defaultEnd;
+
+    // Jika ada param tidak valid → hapus dari URL
+    if (!isStartValid || !isEndValid) {
+      if (!isStartValid) newParams.delete('start_date');
+      if (!isEndValid) newParams.delete('end_date');
+      router.replace(`/transactions?${newParams.toString()}`);
+    }
+
+    // Set filters setelah semua validasi
+    setFilters({
+      typeId: '',
+      categoryId: '',
+      startDate,
+      endDate,
+    });
+
+    setRange([new Date(startDate), new Date(endDate)]);
+  }, [searchParams]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -201,11 +258,11 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({ onSubmit, onRes
                             value={category.name.toLowerCase()}
                             className="cursor-pointer border border-b-1 border-muted"
                             onSelect={(currentValue) => {
-                              const categoryId = categoryData.data?.find(
-                                (cat) => cat.id.toString() === currentValue
-                              )?.id;
+                              const category = categoryData.data?.find(
+                                (cat) => cat.name.toLowerCase() === currentValue
+                              );
 
-                              updateFilters({ categoryId: categoryId?.toString() || '' });
+                              updateFilters({ categoryId: category?.id?.toString() || '' });
                               setIsOpenCategory(false);
                             }}
                           >
