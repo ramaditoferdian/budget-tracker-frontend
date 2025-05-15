@@ -287,13 +287,13 @@ const BigCalendar = () => {
           return (
             <Card
               key={date}
-              className={`p-3 cursor-pointer ${isToday ? 'bg-primary/5' : ''}`}
+              className={`p-3 cursor-pointer ${isToday ? 'bg-primary/5 border-black/30' : ''}`}
               onClick={() => handleRowClick(dateString)}
             >
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-3">
                   <div
-                    className={`flex flex-col items-center justify-center w-8 h-8 rounded-full bg-muted/50 ${isToday ? 'bg-blue-400 text-white' : ''}`}
+                    className={`flex flex-col items-center justify-center w-8 h-8 rounded-full bg-muted ${isToday ? 'bg-blue-500/70 text-white' : ''}`}
                   >
                     <span className="text-xs font-medium">{date}</span>
                   </div>
