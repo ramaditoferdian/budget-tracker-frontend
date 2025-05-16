@@ -293,7 +293,7 @@ const BigCalendar = () => {
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-3">
                   <div
-                    className={`flex flex-col items-center justify-center w-8 h-8 rounded-full bg-muted ${isToday ? 'bg-blue-500/70 text-white' : ''}`}
+                    className={`flex flex-col items-center justify-center w-8 h-8 rounded-full bg-muted ${isToday ? 'bg-blue-500/75 text-white' : ''}`}
                   >
                     <span className="text-xs font-medium">{date}</span>
                   </div>
