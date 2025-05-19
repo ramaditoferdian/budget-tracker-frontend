@@ -143,7 +143,7 @@ const BigCalendar = () => {
     <div className="w-full lg:max-w-lg xl:max-w-2xl mx-auto py-4 space-y-6">
       <div className="sticky top-0 h-16 z-[3] border-b bg-background flex items-center px-4 justify-between">
         <div className="flex items-center gap-2">
-          <CalendarIcon className="w-5 h-5 text-muted-foreground" />
+          <CalendarIcon className="w-5 h-5" />
           <h1 className="text-sm lg:text-xl font-semibold">Daily Expenses</h1>
         </div>
 
@@ -287,13 +287,13 @@ const BigCalendar = () => {
           return (
             <Card
               key={date}
-              className={`p-3 cursor-pointer ${isToday ? 'bg-primary/5' : ''}`}
+              className={`p-3 cursor-pointer ${isToday ? 'bg-primary/5 border-black/30' : ''}`}
               onClick={() => handleRowClick(dateString)}
             >
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-3">
                   <div
-                    className={`flex flex-col items-center justify-center w-8 h-8 rounded-full bg-muted/50 ${isToday ? 'bg-blue-400 text-white' : ''}`}
+                    className={`flex flex-col items-center justify-center w-8 h-8 rounded-full ${isToday ? 'bg-blue-500/75 text-white' : 'bg-muted'}`}
                   >
                     <span className="text-xs font-medium">{date}</span>
                   </div>

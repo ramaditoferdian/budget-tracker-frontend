@@ -12,7 +12,7 @@ export default function MainLayout({
     <AuthGuard>
       <div className="grid grid-cols-[auto_1fr] h-screen overflow-hidden">
         {/* Sidebar */}
-        <aside className="h-full sticky top-0 border-r border-neutral-200">
+        <aside className="h-full sticky top-0 border-r border-neutral-200 z-10">
           <Sidebar />
         </aside>
 

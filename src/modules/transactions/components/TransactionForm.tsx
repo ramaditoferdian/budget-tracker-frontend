@@ -27,6 +27,7 @@ import { getColorSelect } from '@/utils/format-color';
 import { Transaction } from '@/types';
 import { useDialog } from '@/hooks/useDialog';
 import { set } from 'date-fns';
+import { useQueryClient } from '@tanstack/react-query';
 
 type Mode = 'create' | 'edit';
 
@@ -83,6 +84,8 @@ export default function TransactionForm({
   mode = 'create',
   transaction,
 }: TransactionFormDialogProps) {
+  const queryClient = useQueryClient();
+
   const [amountDisplay, setAmountDisplay] = useState(formatRupiah('0'));
 
   const [isInitialEdit, setIsInitialEdit] = useState(true);
@@ -156,6 +159,8 @@ export default function TransactionForm({
         },
         {
           onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['transactions'] });
+            queryClient.invalidateQueries({ queryKey: ['sources'] });
             toast.success('Transaction updated successfully!');
             setOpenDialogEdit(false);
           },
@@ -167,6 +172,8 @@ export default function TransactionForm({
     } else {
       createTransaction.mutate(values, {
         onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ['transactions'] });
+          queryClient.invalidateQueries({ queryKey: ['sources'] });
           toast.success('Transaction added successfully!');
           reset();
           setAmountDisplay(formatRupiah('0'));
