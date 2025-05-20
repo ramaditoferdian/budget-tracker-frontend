@@ -9,10 +9,8 @@ import { useDialog } from '@/hooks/useDialog';
 import ConfirmationDialog from '@/components/shared/ConfirmationDialog';
 import { toast } from 'sonner';
 import { getConfirmationMessage } from '@/utils/helpers/confirmation';
-import { useQueryClient } from '@tanstack/react-query';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Card } from '@/components/ui/card';
 import LoadingOverlay from '@/components/LoadingOverlay';
+import { queryClient } from '@/lib/queryClient';
 
 interface TransactionListProps {
   transactions: Transaction[];
@@ -20,8 +18,6 @@ interface TransactionListProps {
 }
 
 const TransactionList: React.FC<TransactionListProps> = ({ transactions, isFetching }) => {
-  const queryClient = useQueryClient();
-
   const editDialog = useDialog('transaction-form:edit');
   const deleteDialog = useDialog('delete-transaction');
 

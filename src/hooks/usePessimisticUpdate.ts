@@ -1,8 +1,7 @@
-import { useQueryClient, QueryKey } from '@tanstack/react-query';
+import { queryClient } from '@/lib/queryClient';
+import { QueryKey } from '@tanstack/react-query';
 
 export const usePessimisticUpdate = (queryKey: QueryKey[0]) => {
-  const queryClient = useQueryClient();
-
   const onError = (error: unknown) => {
     if (error instanceof Error) {
       console.error('Mutation failed:', error.message);
