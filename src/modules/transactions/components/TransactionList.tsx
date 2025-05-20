@@ -9,12 +9,19 @@ import { useDialog } from '@/hooks/useDialog';
 import ConfirmationDialog from '@/components/shared/ConfirmationDialog';
 import { toast } from 'sonner';
 import { getConfirmationMessage } from '@/utils/helpers/confirmation';
+import { useQueryClient } from '@tanstack/react-query';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Card } from '@/components/ui/card';
+import LoadingOverlay from '@/components/LoadingOverlay';
 
 interface TransactionListProps {
   transactions: Transaction[];
+  isFetching: boolean;
 }
 
-const TransactionList: React.FC<TransactionListProps> = ({ transactions }) => {
+const TransactionList: React.FC<TransactionListProps> = ({ transactions, isFetching }) => {
+  const queryClient = useQueryClient();
+
   const editDialog = useDialog('transaction-form:edit');
   const deleteDialog = useDialog('delete-transaction');
 
@@ -40,6 +47,12 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions }) => {
       deleteTransaction.mutate(transactionToDelete.id, {
         onSuccess: () => {
           toast.success('Transaction deleted successfully!');
+          queryClient.invalidateQueries({
+            predicate: (query) => query.queryKey[0] === 'transactions',
+          });
+          queryClient.invalidateQueries({
+            predicate: (query) => query.queryKey[0] === 'sources',
+          });
         },
         onError: () => {
           toast.error('Failed to delete transaction');
@@ -84,6 +97,9 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions }) => {
         setOpen={deleteDialog.setOpen}
         onConfirm={confirmDelete}
       />
+
+      {/* LOADING OVERLAY */}
+      <LoadingOverlay isLoading={isFetching} message="Loading transactions..." />
 
       {/* TRANSACTION LIST */}
       <div className="space-y-8">

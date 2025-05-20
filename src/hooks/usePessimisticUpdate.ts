@@ -1,15 +1,25 @@
-import { useQueryClient } from '@tanstack/react-query'
+import { useQueryClient, QueryKey } from '@tanstack/react-query';
 
-export const usePessimisticUpdate = (queryKey: string) => {
-  const queryClient = useQueryClient()
+export const usePessimisticUpdate = (queryKey: QueryKey[0]) => {
+  const queryClient = useQueryClient();
 
-  const onError = (error: any) => {
-    console.error('Mutation failed:', error)
-  }
+  const onError = (error: unknown) => {
+    if (error instanceof Error) {
+      console.error('Mutation failed:', error.message);
+    } else {
+      console.error('Mutation failed:', error);
+    }
+  };
 
   const onSuccess = () => {
-    queryClient.invalidateQueries({ queryKey: [queryKey] })
-  }
+    queryClient.invalidateQueries({
+      predicate: (query) => query.queryKey[0] === queryKey,
+    });
 
-  return { onError, onSuccess }
-}
+    queryClient.refetchQueries({
+      predicate: (query) => query.queryKey[0] === queryKey,
+    });
+  };
+
+  return { onError, onSuccess };
+};

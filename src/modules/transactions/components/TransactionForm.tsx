@@ -28,6 +28,7 @@ import { Transaction } from '@/types';
 import { useDialog } from '@/hooks/useDialog';
 import { set } from 'date-fns';
 import { useQueryClient } from '@tanstack/react-query';
+import { Skeleton } from '@/components/ui/skeleton';
 
 type Mode = 'create' | 'edit';
 
@@ -96,8 +97,21 @@ export default function TransactionForm({
   const { data: transactionTypes } = useTransactionTypes();
   const { data: categories } = useCategories();
   const { data: sources } = useSources();
-  const createTransaction = useCreateTransaction();
-  const updateTransaction = useUpdateTransaction();
+
+  const {
+    mutate: mutateCreateTransaction,
+    isPending: isPendingCreateTransaction,
+    isError: isErrorCreateTransaction,
+    isSuccess: isSuccessCreateTransaction,
+  } = useCreateTransaction();
+  const {
+    mutate: mutateUpdateTransaction,
+    isPending: isPendingUpdateTransaction,
+    isError: isErrorUpdateTransaction,
+    isSuccess: isSuccessUpdateTransaction,
+  } = useUpdateTransaction();
+
+  const isDisabled = isPendingCreateTransaction || isPendingUpdateTransaction;
 
   const {
     register,
@@ -150,7 +164,7 @@ export default function TransactionForm({
 
   const onSubmit = (values: TransactionFormValues) => {
     if (mode === 'edit' && transaction?.id) {
-      updateTransaction.mutate(
+      mutateUpdateTransaction(
         {
           id: transaction.id,
           payload: {
@@ -159,8 +173,16 @@ export default function TransactionForm({
         },
         {
           onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['transactions'] });
-            queryClient.invalidateQueries({ queryKey: ['sources'] });
+            queryClient
+              .invalidateQueries({
+                predicate: (query) => query.queryKey[0] === 'transactions',
+              })
+              .then(() => {
+                queryClient.invalidateQueries({
+                  predicate: (query) => query.queryKey[0] === 'sources',
+                });
+              });
+
             toast.success('Transaction updated successfully!');
             setOpenDialogEdit(false);
           },
@@ -170,10 +192,18 @@ export default function TransactionForm({
         }
       );
     } else {
-      createTransaction.mutate(values, {
+      mutateCreateTransaction(values, {
         onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ['transactions'] });
-          queryClient.invalidateQueries({ queryKey: ['sources'] });
+          queryClient
+            .invalidateQueries({
+              predicate: (query) => query.queryKey[0] === 'transactions',
+            })
+            .then(() => {
+              queryClient.invalidateQueries({
+                predicate: (query) => query.queryKey[0] === 'sources',
+              });
+            });
+
           toast.success('Transaction added successfully!');
           reset();
           setAmountDisplay(formatRupiah('0'));
@@ -197,6 +227,7 @@ export default function TransactionForm({
     <>
       <Select value={value} onValueChange={onChange} {...register(name)}>
         <SelectTrigger
+          disabled={isDisabled}
           className={`rounded-xl border px-3 py-2 text-sm shadow-sm focus:ring-1 focus:ring-ring focus:outline-none ${
             value && getColorSelect(value)
           }`}
@@ -264,6 +295,7 @@ export default function TransactionForm({
       <Input
         type="text"
         value={amountDisplay}
+        disabled={isDisabled}
         onChange={(e) => {
           const parsed = parseRupiah(e.target.value);
           setAmountDisplay(formatRupiah(parsed.toString()));
@@ -276,6 +308,7 @@ export default function TransactionForm({
 
       <Input
         type="text"
+        disabled={isDisabled}
         {...register('description')}
         placeholder="Description"
         className="rounded-xl border px-3 py-2 text-sm shadow-sm focus:ring-2 focus:ring-ring focus:outline-none"
@@ -284,6 +317,7 @@ export default function TransactionForm({
 
       <Controller
         control={control}
+        disabled={isDisabled}
         name="date"
         render={({ field }) => (
           <div className="flex flex-col gap-1">
@@ -308,7 +342,7 @@ export default function TransactionForm({
       />
 
       <DialogFooter>
-        <Button type="submit" disabled={isSubmitting}>
+        <Button type="submit" disabled={isSubmitting || isDisabled}>
           {isSubmitting ? 'Saving...' : 'Save'}
         </Button>
       </DialogFooter>
