@@ -1,7 +1,13 @@
-import api from "@/lib/axios";
+import api from '@/lib/axios';
+import qs from 'qs';
 
 export const get = async <T>(url: string, params?: any): Promise<T> => {
-  const res = await api.get(url, { params });
+  const res = await api.get(url, {
+    params,
+    paramsSerializer: {
+      serialize: (params) => qs.stringify(params, { arrayFormat: 'comma' }),
+    },
+  });
   return res.data;
 };
 

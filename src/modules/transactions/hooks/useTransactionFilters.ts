@@ -3,24 +3,28 @@ import { useTransactionFilterStore } from '../stores/transactionFilterStore';
 
 export const useTransactionFilters = () => {
   const {
-    typeId,
-    categoryId,
+    typeIds,
+    categoryIds,
+    sourceIds,
     startDate,
     endDate,
-    setTypeId,
-    setCategoryId,
+    setTypeIds,
+    setCategoryIds,
+    setSourceIds,
     setStartDate,
     setEndDate,
     resetFilters,
   } = useTransactionFilterStore();
 
   return {
-    typeId,
-    categoryId,
+    typeIds,
+    categoryIds,
+    sourceIds,
     startDate,
     endDate,
-    setTypeId,
-    setCategoryId,
+    setTypeIds,
+    setCategoryIds,
+    setSourceIds,
     setStartDate,
     setEndDate,
     resetFilters,

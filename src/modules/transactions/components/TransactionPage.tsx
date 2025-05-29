@@ -9,25 +9,29 @@ import { useTransactionFilters } from '@/modules/transactions/hooks/useTransacti
 import { TransactionQueryParams } from '@/types';
 import TablePagination from '@/components/TablePagination';
 import TransactionsPageSkeleton from './TransactionPageSkeleton';
+import TransactionRecap from './TransactionRecap';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import LoadingOverlay from '@/components/LoadingOverlay';
 
 const TransactionsPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  const { typeId, categoryId, startDate, endDate } = useTransactionFilters();
+  const { typeIds, categoryIds, sourceIds, startDate, endDate } = useTransactionFilters();
 
   const params: TransactionQueryParams = useMemo(
     () => ({
       page: currentPage,
       limit: itemsPerPage,
-      typeId,
-      categoryId,
+      typeIds,
+      categoryIds,
+      sourceIds,
       startDate,
       endDate,
       sortBy: 'date',
       order: 'desc',
     }),
-    [currentPage, itemsPerPage, typeId, categoryId, startDate, endDate]
+    [currentPage, itemsPerPage, typeIds, categoryIds, sourceIds, startDate, endDate]
   );
 
   const { data, isLoading, isError, error, isFetching, isFetched } = useTransactions(params);
@@ -36,6 +40,7 @@ const TransactionsPage: React.FC = () => {
   const pagination = data?.data.pagination;
   const totalPages = pagination?.pageCount || 1;
   const totalItems = pagination?.rowsCount || 0;
+  const recap = data?.data.recap;
 
   if (isLoading) return <TransactionsPageSkeleton />;
 
@@ -51,11 +56,13 @@ const TransactionsPage: React.FC = () => {
     <div className="flex flex-col px-4 py-4 h-full">
       {/* Header */}
       <TransactionsHeader />
+      <TransactionRecap data={recap} filters={params} />
 
       {/* Scrollable List */}
-      <div className="flex-1 mt-4 overflow-y-auto min-h-[300px] h-full pr-5">
+      <ScrollArea className="flex-1 mt-4 overflow-y-auto min-h-[300px] h-full pr-5 relative">
         <TransactionList transactions={transactions} isFetching={isFetching || !isFetched} />
-      </div>
+        <ScrollBar orientation="vertical" className="transition-all duration-300" />
+      </ScrollArea>
 
       {/* Pagination */}
       <div className="pt-4">

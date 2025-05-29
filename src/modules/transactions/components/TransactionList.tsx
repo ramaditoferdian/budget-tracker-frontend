@@ -95,7 +95,13 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions, isFetch
       />
 
       {/* LOADING OVERLAY */}
-      <LoadingOverlay isLoading={isFetching} message="Loading transactions..." />
+      <LoadingOverlay
+        blur
+        blurintensity={2}
+        isLoading={isFetching}
+        message="Loading transactions..."
+        zIndex={1}
+      />
 
       {/* TRANSACTION LIST */}
       <div className="space-y-8">

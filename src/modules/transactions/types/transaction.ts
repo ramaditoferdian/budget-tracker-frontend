@@ -49,9 +49,15 @@ export interface TransactionPagination {
   limit: number;
 }
 
+export interface RecapData {
+  totalIncome: number;
+  totalExpense: number;
+}
+
 export interface TransactionListResponse {
   data: {
     transactions: Transaction[];
+    recap: RecapData;
     pagination: TransactionPagination;
   };
   errors: boolean;
@@ -62,8 +68,9 @@ export interface TransactionQueryParams {
   order?: 'asc' | 'desc';
   startDate?: string; // YYYY-MM-DD
   endDate?: string; // YYYY-MM-DD
-  typeId?: string;
-  categoryId?: string;
+  typeIds?: string[];
+  categoryIds?: string[];
+  sourceIds?: string[];
   limit?: number; // (default = 10)
   page?: number; // (default = 1)
 }

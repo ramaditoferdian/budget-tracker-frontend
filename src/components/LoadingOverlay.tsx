@@ -23,6 +23,11 @@ interface LoadingOverlayProps {
   blur?: boolean;
 
   /**
+   * Intensity of the blur
+   */
+  blurintensity?: number;
+
+  /**
    * Optional z-index for the overlay
    */
   zIndex?: number;
@@ -33,6 +38,7 @@ const LoadingOverlay = ({
   message = 'Loading...',
   className,
   blur = true,
+  blurintensity = 2,
   zIndex = 100,
 }: LoadingOverlayProps) => {
   if (!isLoading) return null;
@@ -41,12 +47,12 @@ const LoadingOverlay = ({
     <div
       className={cn(
         'absolute inset-0 flex flex-col items-center justify-center',
-        blur ? 'backdrop-blur-[2px] bg-black/30' : 'bg-black/70',
+        blur ? `backdrop-blur-[${blurintensity}px]` : 'bg-black/70',
         className
       )}
       style={{ zIndex }}
     >
-      <div className="flex flex-col items-center justify-center gap-3 px-4 py-3 rounded-lg bg-background/90 shadow-sm border border-border/30">
+      <div className="flex flex-col items-center justify-center gap-3 px-4 py-3 rounded-lg bg-background/90 shadow-sm border border-border">
         <Loader2 className="h-6 w-6 text-primary animate-spin" />
         {message && <p className="text-sm text-muted-foreground">{message}</p>}
       </div>

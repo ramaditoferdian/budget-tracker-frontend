@@ -5,11 +5,11 @@ import { Button } from '@/components/ui/button';
 import TransactionFormDialog from './TransactionFormDialog';
 import { useDialog } from '@/hooks/useDialog';
 import { useTransactionFilters } from '@/modules/transactions/hooks/useTransactionFilters';
-import TransactionFilters from './TransactionFilters';
+import TransactionFilters2 from './TransactionFilters2';
 
 const TransactionsHeader = () => {
   const { open, setOpen } = useDialog('transaction-form:create');
-  const { resetFilters, setTypeId, setCategoryId, setStartDate, setEndDate } =
+  const { resetFilters, setTypeIds, setCategoryIds, setSourceIds, setStartDate, setEndDate } =
     useTransactionFilters();
 
   return (
@@ -17,10 +17,11 @@ const TransactionsHeader = () => {
       <TransactionFormDialog mode="create" open={open} setOpen={setOpen} />
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
-        <TransactionFilters
+        <TransactionFilters2
           onSubmit={(filters) => {
-            setTypeId(filters.typeId);
-            setCategoryId(filters.categoryId);
+            setTypeIds(filters.typeIds);
+            setCategoryIds(filters.categoryIds);
+            setSourceIds(filters.sourceIds);
             setStartDate(filters.startDate || undefined);
             setEndDate(filters.endDate || undefined);
           }}
