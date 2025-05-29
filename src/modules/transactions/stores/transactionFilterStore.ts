@@ -2,43 +2,54 @@
 import { create } from 'zustand';
 import { startOfMonth, endOfMonth, format } from 'date-fns';
 
+// Helper untuk ambil dan validasi tanggal dari URL
+const getDateFromUrl = (param: string): string | undefined => {
+  if (typeof window === 'undefined') return undefined;
+  const urlParams = new URLSearchParams(window.location.search);
+  const date = urlParams.get(param);
+  return date && !isNaN(Date.parse(date)) ? date : undefined;
+};
+
 interface TransactionFilterStore {
-  typeId?: string;
-  categoryId?: string;
-  startDate?: string; // Store as a string in YYYY-MM-DD format
-  endDate?: string;   // Store as a string in YYYY-MM-DD format
-  setTypeId: (id?: string) => void;
-  setCategoryId: (id?: string) => void;
+  typeIds: string[];
+  categoryIds: string[];
+  sourceIds: string[];
+  startDate?: string;
+  endDate?: string;
+  setTypeIds: (ids: string[]) => void;
+  setCategoryIds: (ids: string[]) => void;
+  setSourceIds: (ids: string[]) => void;
   setStartDate: (date?: string) => void;
   setEndDate: (date?: string) => void;
   resetFilters: () => void;
 }
 
 export const useTransactionFilterStore = create<TransactionFilterStore>((set) => {
-  // Mendapatkan tanggal sekarang
   const now = new Date();
+  const urlStartDate = getDateFromUrl('start_date');
+  const urlEndDate = getDateFromUrl('end_date');
 
-  // Mengatur startDate ke awal bulan ini
-  const startDate = format(startOfMonth(now), 'yyyy-MM-dd'); // Format ke YYYY-MM-DD
-
-  // Mengatur endDate ke akhir bulan ini
-  const endDate = format(endOfMonth(now), 'yyyy-MM-dd'); // Format ke YYYY-MM-DD
+  const defaultStartDate = urlStartDate ?? format(startOfMonth(now), 'yyyy-MM-dd');
+  const defaultEndDate = urlEndDate ?? format(endOfMonth(now), 'yyyy-MM-dd');
 
   return {
-    typeId: undefined,
-    categoryId: undefined,
-    startDate, // Default ke awal bulan ini
-    endDate,   // Default ke akhir bulan ini
-    setTypeId: (typeId) => set({ typeId }),
-    setCategoryId: (categoryId) => set({ categoryId }),
+    typeIds: [],
+    categoryIds: [],
+    sourceIds: [],
+    startDate: defaultStartDate,
+    endDate: defaultEndDate,
+    setTypeIds: (typeIds) => set({ typeIds }),
+    setCategoryIds: (categoryIds) => set({ categoryIds }),
+    setSourceIds: (sourceIds) => set({ sourceIds }),
     setStartDate: (startDate) => set({ startDate }),
     setEndDate: (endDate) => set({ endDate }),
     resetFilters: () =>
       set({
-        typeId: undefined,
-        categoryId: undefined,
-        startDate, // Reset ke awal bulan ini
-        endDate,   // Reset ke akhir bulan ini
+        typeIds: [],
+        categoryIds: [],
+        sourceIds: [],
+        startDate: defaultStartDate,
+        endDate: defaultEndDate,
       }),
   };
 });
